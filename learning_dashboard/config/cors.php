@@ -23,6 +23,8 @@ return [
 
     'allowed_origins_patterns' => [],
 
+    'allowed_origins' => ['http://localhost:4200'],
+
     'allowed_headers' => ['*'],
 
     'exposed_headers' => [],

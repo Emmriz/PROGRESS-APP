@@ -1,23 +1,27 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { CommonModule, NgIf } from '@angular/common';
+import { RouterModule, Router } from '@angular/router';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
-import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, HttpClientModule], // ✅ import here
-  templateUrl: './login.component.html'
+  imports: [ReactiveFormsModule, CommonModule, NgIf, HttpClientModule, RouterModule], // necessary imports
+  templateUrl: './login.component.html',
 })
 export class LoginComponent {
   loginForm: FormGroup;
+  error: string | null = null;
   loading = false;
-  error = '';
 
-  constructor(private fb: FormBuilder, private http: HttpClient) {
+  // Replace with your Laravel API URL
+  apiUrl = 'http://localhost:8000/api/login';
+
+  constructor(private fb: FormBuilder, private http: HttpClient, private router: Router) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
-      password: ['', Validators.required]
+      password: ['', Validators.required],
     });
   }
 
@@ -25,19 +29,23 @@ export class LoginComponent {
     if (this.loginForm.invalid) return;
 
     this.loading = true;
-    this.error = '';
+    this.error = null;
 
-    this.http.post('http://localhost:8000/api/login', this.loginForm.value)
-      .subscribe({
-        next: (res: any) => {
+    this.http.post<any>(this.apiUrl, this.loginForm.value).subscribe({
+      next: (res) => {
+        console.log('Login success', res);
+        // Store token for authenticated API calls
+        if (res.token) {
           localStorage.setItem('token', res.token);
-          alert('Login successful ✅');
-          this.loading = false;
-        },
-        error: () => {
-          this.error = 'Invalid credentials ❌';
-          this.loading = false;
         }
-      });
+        this.router.navigate(['/dashboard']);
+        this.loading = false;
+      },
+      error: (err) => {
+        console.error(err);
+        this.error = err.error?.message || 'Login failed';
+        this.loading = false;
+      },
+    });
   }
 }
