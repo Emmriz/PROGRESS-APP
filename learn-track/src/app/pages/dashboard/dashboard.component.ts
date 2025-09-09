@@ -1,33 +1,70 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-import { CommonModule, NgClass, NgFor, NgIf, DatePipe } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
+import { RouterModule, Router } from '@angular/router';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { NgIf, NgForOf, NgClass } from '@angular/common';
+
+interface Submission {
+  id: number;
+  notes: string;
+  created_at: string;
+  status: 'approved' | 'pending' | 'rejected';
+  screenshot_path?: string;
+}
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, NgClass, NgFor, NgIf, DatePipe], // ✅ full imports
+  imports: [CommonModule, RouterModule, HttpClientModule, NgIf, NgForOf, NgClass, DatePipe],
   templateUrl: './dashboard.component.html',
 })
 export class DashboardComponent implements OnInit {
-  user = { name: 'Emmanuel' }; // Later: load from API
-  submissions: any[] = [
-    { notes: 'Fixed bug in API', created_at: new Date(), status: 'approved' },
-    { notes: 'UI update request', created_at: new Date(), status: 'pending' },
-    { notes: 'Server crash report', created_at: new Date(), status: 'rejected' },
-  ];
+  user: any = null;
+  submissions: Submission[] = [];
 
-  constructor(private router: Router) {}
+  approvedCount: number = 0;
+  pendingCount: number = 0;
+  rejectedCount: number = 0;
+
+  constructor(private http: HttpClient, private router: Router) {}
 
   ngOnInit(): void {
-    // TODO: Fetch submissions from Laravel API
+    this.loadUser();
+    this.loadSubmissions();
+  }
+
+  loadUser() {
+    const userData = localStorage.getItem('user');
+    this.user = userData ? JSON.parse(userData) : null;
+  }
+
+  loadSubmissions() {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+
+    this.http
+      .get<{ data: Submission[] }>('http://localhost:8000/api/submissions', {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .subscribe((res) => {
+        this.submissions = res.data.map((sub) => ({
+          ...sub,
+          status: (sub.status as 'approved' | 'pending' | 'rejected') || 'pending',
+        }));
+
+        this.approvedCount = this.submissions.filter((s) => s.status === 'approved').length;
+        this.pendingCount = this.submissions.filter((s) => s.status === 'pending').length;
+        this.rejectedCount = this.submissions.filter((s) => s.status === 'rejected').length;
+      });
   }
 
   logout() {
     localStorage.removeItem('token');
+    localStorage.removeItem('user');
     this.router.navigate(['/login']);
   }
 
   toggleSidebar() {
-    alert('Sidebar toggle not yet implemented 😅');
+    // Optional: implement responsive sidebar toggle
   }
 }

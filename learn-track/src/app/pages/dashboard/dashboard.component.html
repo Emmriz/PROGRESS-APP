@@ -5,15 +5,12 @@
       <h1 class="text-xl font-bold text-blue-600">My Dashboard</h1>
     </div>
     <nav class="mt-6 space-y-2 px-4">
-      <a href="#" class="block px-3 py-2 rounded-lg hover:bg-blue-100">🏠 Home</a>
-      <a href="#" class="block px-3 py-2 rounded-lg hover:bg-blue-100">📂 Submissions</a>
+      <a routerLink="/dashboard" class="block px-3 py-2 rounded-lg hover:bg-orange-600 hover:text-white">🏠 Dashboard</a>
+      <a routerLink="/submissions" class="block px-3 py-2 rounded-lg hover:bg-orange-600 hover:text-white">📂 Submissions</a>
       <a href="#" class="block px-3 py-2 rounded-lg hover:bg-blue-100">⚙️ Settings</a>
     </nav>
     <div class="absolute bottom-4 w-full px-6">
-      <button
-        class="w-full py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
-        (click)="logout()"
-      >
+      <button class="w-full py-2 bg-red-500 text-white rounded-lg hover:bg-red-600" (click)="logout()">
         Logout
       </button>
     </div>
@@ -24,31 +21,26 @@
     <!-- Top bar -->
     <div class="flex items-center justify-between mb-6">
       <h2 class="text-2xl font-semibold">Welcome back, {{ user?.name }} 👋</h2>
-      <button
-        class="md:hidden px-3 py-2 bg-blue-600 text-white rounded-lg"
-        (click)="toggleSidebar()"
-      >
-        ☰
-      </button>
+      <button class="md:hidden px-3 py-2 bg-blue-600 text-white rounded-lg" (click)="toggleSidebar()">☰</button>
     </div>
 
     <!-- Stats cards -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
       <div class="bg-white p-6 rounded-xl shadow hover:shadow-lg">
         <p class="text-gray-500">Total Submissions</p>
-        <h3 class="text-3xl font-bold">24</h3>
+        <h3 class="text-3xl font-bold">{{ submissions.length }}</h3>
       </div>
       <div class="bg-white p-6 rounded-xl shadow hover:shadow-lg">
         <p class="text-gray-500">Pending Reviews</p>
-        <h3 class="text-3xl font-bold">5</h3>
+        <h3 class="text-3xl font-bold">{{ pendingCount }}</h3>
       </div>
       <div class="bg-white p-6 rounded-xl shadow hover:shadow-lg">
         <p class="text-gray-500">Approved</p>
-        <h3 class="text-3xl font-bold">19</h3>
+        <h3 class="text-3xl font-bold">{{ approvedCount }}</h3>
       </div>
     </div>
 
-    <!-- Recent submissions -->
+    <!-- Recent submissions table -->
     <div class="bg-white rounded-xl shadow p-6">
       <h3 class="text-lg font-semibold mb-4">Recent Submissions</h3>
       <table class="w-full text-left border-collapse">
@@ -77,6 +69,9 @@
                 {{ submission.status }}
               </span>
             </td>
+          </tr>
+          <tr *ngIf="submissions.length === 0">
+            <td colspan="4" class="text-center py-4 text-gray-500">No submissions found.</td>
           </tr>
         </tbody>
       </table>

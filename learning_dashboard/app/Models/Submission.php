@@ -13,6 +13,7 @@ class Submission extends Model
         'user_id',
         'details',
         'screenshot',
+        'status',
     ];
 
     // Each submission belongs to a user

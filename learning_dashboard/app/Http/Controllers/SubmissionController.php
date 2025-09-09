@@ -36,6 +36,7 @@ class SubmissionController extends Controller
             'user_id' => Auth::id(),
             'details' => $request->details,
             'screenshot' => $path,
+            'status' => 'pending', // default status
         ]);
 
         return response()->json([
@@ -44,4 +45,6 @@ class SubmissionController extends Controller
             'data' => $submission
         ], 201);
     }
+
+    
 }
