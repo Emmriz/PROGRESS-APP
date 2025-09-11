@@ -1,6 +1,6 @@
 <div class="min-h-screen bg-gray-100 flex">
   <!-- Sidebar -->
-  <aside class="w-64 bg-white shadow-md hidden md:block">
+  <aside class="w-64 bg-white shadow-md hidden sticky md:block top-0 h-screen">
     <div class="p-6 border-b">
       <h1 class="text-xl font-bold text-blue-600">My Dashboard</h1>
     </div>
@@ -8,12 +8,14 @@
       <a routerLink="/dashboard" class="block px-3 py-2 rounded-lg hover:bg-orange-600 hover:text-white">🏠 Dashboard</a>
       <a routerLink="/submissions" class="block px-3 py-2 rounded-lg hover:bg-orange-600 hover:text-white">📂 Submissions</a>
       <a href="#" class="block px-3 py-2 rounded-lg hover:bg-blue-100">⚙️ Settings</a>
-    </nav>
-    <div class="absolute bottom-4 w-full px-6">
-      <button class="w-full py-2 bg-red-500 text-white rounded-lg hover:bg-red-600" (click)="logout()">
+
+      <div class="px-6 ">
+      <button class="w-full mt-80 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600" (click)="logout()">
         Logout
       </button>
     </div>
+    </nav>
+    
   </aside>
 
   <!-- Main content -->
@@ -41,7 +43,7 @@
     </div>
 
     <!-- Recent submissions table -->
-    <div class="bg-white rounded-xl shadow p-6">
+    <!-- <div class="bg-white rounded-xl shadow p-6">
       <h3 class="text-lg font-semibold mb-4">Recent Submissions</h3>
       <table class="w-full text-left border-collapse">
         <thead>
@@ -55,11 +57,54 @@
         <tbody>
           <tr *ngFor="let submission of submissions; index as i" class="border-b">
             <td class="py-2">{{ i + 1 }}</td>
-            <td class="py-2">{{ submission.notes }}</td>
+            <td class="py-2">{{ submission.details }}</td>
             <td class="py-2">{{ submission.created_at | date:'medium' }}</td>
             <td class="py-2">
               <span
                 class="px-2 py-1 rounded text-xs"
+                [ngClass]="{
+                  'bg-green-100 text-green-700': submission.status === 'approved',
+                  'bg-yellow-100 text-yellow-700': submission.status === 'pending',
+                  'bg-red-100 text-red-700': submission.status === 'rejected'
+                }"
+              >
+                {{ submission.status }}
+              </span>
+            </td>
+          </tr>
+          <tr *ngIf="submissions.length === 0">
+            <td colspan="4" class="text-center py-4 text-gray-500">No submissions found.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div> -->
+
+    <div class="bg-white rounded-xl shadow p-6">
+      <table class="w-full text-left border-collapse">
+        <thead>
+          <tr class="text-gray-600 border-b">
+            <th class="pb-2 border-2 p-8">#</th>
+            <th class="pb-2 border-2 p-10 w-25">Notes</th>
+            <th class="pb-2 py-2 border-2 p-10">Screenshot</th>
+            <th class="pb-2 py-2 border-2 p-10">Date</th>
+            <th class="pb-2 py-2 border-2 p-10">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let submission of submissions; index as i" class="border-b">
+            <td class="py-2 border-2 p-8">{{ i + 1 }}</td>
+            <td class="py-2 border-2 p-10 w-25">{{ submission.details }}</td>
+            <td class="py-2 border-2 p-10">
+          <img *ngIf="submission.screenshot_path"
+               [src]="'http://localhost:8000/storage/' + submission.screenshot_path"
+               alt="Screenshot"
+               class="h-16 w-16 object-cover rounded" />
+          <span *ngIf="!submission.screenshot_path">N/A</span>
+        </td>
+            <td class="py-2 border-2 p-10">{{ submission.created_at | date:'medium' }}</td>
+            <td class="py-2 border-2 p-10">
+              <span
+                class="px-2 py-1 rounded text-xs "
                 [ngClass]="{
                   'bg-green-100 text-green-700': submission.status === 'approved',
                   'bg-yellow-100 text-yellow-700': submission.status === 'pending',

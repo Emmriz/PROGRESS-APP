@@ -1,6 +1,6 @@
 <div class="min-h-screen bg-gray-100 flex">
   <!-- Sidebar (same as dashboard) -->
-  <aside class="w-64 bg-white shadow-md hidden md:block">
+  <aside class="w-64 bg-white shadow-md hidden sticky md:block top-0 h-screen">
     <div class="p-6 border-b">
       <h1 class="text-xl font-bold text-blue-600">My Dashboard</h1>
     </div>
@@ -9,8 +9,8 @@
       <a routerLink="/submissions" class="block px-3 py-2 rounded-lg hover:bg-orange-600 hover:text-white">📂 Submissions</a>
       <a href="#" class="block px-3 py-2 rounded-lg hover:bg-blue-100">⚙️ Settings</a>
 
-      <div class=" bottom-44 w-full px-6">
-      <button class="w-full py-2 bg-red-500 text-white rounded-lg hover:bg-red-600" (click)="logout()">
+      <div class="px-6 ">
+      <button class="w-full mt-80 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-800" (click)="logout()">
         Logout
       </button>
     </div>
@@ -20,9 +20,9 @@
 
   <!-- Main content -->
   <main class="flex-1 p-6">
-    <h2 class="text-2xl font-semibold mb-4">Submit a New Entry</h2>
+    <h2 class="text-2xl font-semibold text-orange-600 uppercase mb-4">Submit a New Entry</h2>
 
-    <form class="bg-white p-6 rounded-xl shadow mb-6" (ngSubmit)="submitSubmission()">
+    <form class="bg-white p-6 rounded-xl text-orange-600 shadow mb-6" (ngSubmit)="submitSubmission()">
       <textarea
         [(ngModel)]="details"
         name="notes"
@@ -45,7 +45,7 @@
       <button
         type="submit"
         [disabled]="uploading"
-        class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+        class="px-4 py-2 bg-orange-600 text-white rounded hover:bg-orange-700 w-60"
       >
         {{ uploading ? 'Submitting...' : 'Submit' }}
       </button>

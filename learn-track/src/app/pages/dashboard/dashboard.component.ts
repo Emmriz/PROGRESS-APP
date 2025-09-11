@@ -6,7 +6,7 @@ import { NgIf, NgForOf, NgClass } from '@angular/common';
 
 interface Submission {
   id: number;
-  notes: string;
+  details: string;
   created_at: string;
   status: 'approved' | 'pending' | 'rejected';
   screenshot_path?: string;
@@ -55,7 +55,13 @@ export class DashboardComponent implements OnInit {
         this.approvedCount = this.submissions.filter((s) => s.status === 'approved').length;
         this.pendingCount = this.submissions.filter((s) => s.status === 'pending').length;
         this.rejectedCount = this.submissions.filter((s) => s.status === 'rejected').length;
-      });
+     
+
+       this.submissions = this.submissions
+        .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+        .slice(0, 3);
+
+         });
   }
 
   logout() {

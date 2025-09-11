@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
-import { Router } from '@angular/router';
+import { RouterLink, Router } from '@angular/router';
 
 interface Submission {
   id: number;
@@ -15,7 +15,7 @@ interface Submission {
 @Component({
   selector: 'app-submission',
   standalone: true,
-  imports: [CommonModule, FormsModule, HttpClientModule],
+  imports: [CommonModule, FormsModule, HttpClientModule, RouterLink],
   templateUrl: './submissions.component.html',
 })
 export class SubmissionComponent implements OnInit {
