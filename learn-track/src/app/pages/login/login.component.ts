@@ -25,27 +25,58 @@ export class LoginComponent {
     });
   }
 
+  // onSubmit() {
+  //   if (this.loginForm.invalid) return;
+
+  //   this.loading = true;
+  //   this.error = null;
+
+  //   this.http.post<any>(this.apiUrl, this.loginForm.value).subscribe({
+  //     next: (res) => {
+  //       console.log('Login success', res);
+  //       // Store token for authenticated API calls
+  //       if (res.token) {
+  //         localStorage.setItem('token', res.token);
+  //       }
+  //       this.router.navigate(['/dashboard']);
+  //       this.loading = false;
+  //     },
+  //     error: (err) => {
+  //       console.error(err);
+  //       this.error = err.error?.message || 'Login failed';
+  //       this.loading = false;
+  //     },
+  //   });
+  // }
   onSubmit() {
-    if (this.loginForm.invalid) return;
+  if (this.loginForm.invalid) return;
 
-    this.loading = true;
-    this.error = null;
+  this.loading = true;
+  this.error = null;
 
-    this.http.post<any>(this.apiUrl, this.loginForm.value).subscribe({
-      next: (res) => {
-        console.log('Login success', res);
-        // Store token for authenticated API calls
-        if (res.token) {
-          localStorage.setItem('token', res.token);
-        }
-        this.router.navigate(['/dashboard']);
-        this.loading = false;
-      },
-      error: (err) => {
-        console.error(err);
-        this.error = err.error?.message || 'Login failed';
-        this.loading = false;
-      },
-    });
-  }
+  this.http.post<any>(this.apiUrl, this.loginForm.value).subscribe({
+    next: (res) => {
+      console.log('Login success', res);
+
+      // Store token for authenticated API calls
+      if (res.token) {
+        localStorage.setItem('token', res.token);
+      }
+
+      // Store user info (adapt to your backend response structure)
+      if (res.user) {
+        localStorage.setItem('user', JSON.stringify(res.user));
+      }
+
+      this.router.navigate(['/dashboard']);
+      this.loading = false;
+    },
+    error: (err) => {
+      console.error(err);
+      this.error = err.error?.message || 'Login failed';
+      this.loading = false;
+    },
+  });
+}
+
 }

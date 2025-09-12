@@ -33,9 +33,23 @@ export class DashboardComponent implements OnInit {
     this.loadSubmissions();
   }
 
+  // loadUser() {
+  //   const userData = localStorage.getItem('user');
+  //   this.user = userData ? JSON.parse(userData) : null;
+  // }
+
   loadUser() {
     const userData = localStorage.getItem('user');
-    this.user = userData ? JSON.parse(userData) : null;
+    if (userData) {
+      try {
+        const parsed = JSON.parse(userData);
+        // Handle different formats like { user: { name, email }} or { name, email }
+        this.user = parsed.user ? parsed.user : parsed;
+      } catch (e) {
+        console.error('Invalid user data in localStorage', e);
+        this.user = null;
+      }
+    }
   }
 
   loadSubmissions() {

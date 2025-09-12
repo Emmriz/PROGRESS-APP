@@ -18,6 +18,8 @@ Route::middleware('auth:sanctum')->group(function () {
     // Submissions routes
     Route::post('/submissions', [SubmissionController::class, 'store']);
     Route::get('/submissions', [SubmissionController::class, 'index']);
+    Route::put('/submissions/{submission}', [SubmissionController::class, 'update']);
+    Route::delete('/submissions/{submission}', [SubmissionController::class, 'destroy']);
 });
 
 Route::middleware('auth:sanctum')->group(function () {

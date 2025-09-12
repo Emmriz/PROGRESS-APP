@@ -2,7 +2,8 @@
   <!-- Sidebar -->
   <aside class="w-64 bg-white shadow-md hidden sticky md:block top-0 h-screen">
     <div class="p-6 border-b">
-      <h1 class="text-xl font-bold text-blue-600">My Dashboard</h1>
+      <img src="assets/mylogo.png" alt="Logo" class="h-15 w-auto" />
+      <!-- <h1 class="text-xl font-bold text-blue-600">My Dashboard</h1> -->
     </div>
     <nav class="mt-6 space-y-2 px-4">
       <a routerLink="/dashboard" class="block px-3 py-2 rounded-lg hover:bg-orange-600 hover:text-white">🏠 Dashboard</a>
@@ -22,7 +23,7 @@
   <main class="flex-1 p-6">
     <!-- Top bar -->
     <div class="flex items-center justify-between mb-6">
-      <h2 class="text-2xl font-semibold">Welcome back, {{ user?.name }} 👋</h2>
+      <h2 class="text-2xl font-semibold">Welcome back, <span class="text-orange-600">{{ user?.name }}</span> 👋</h2>
       <button class="md:hidden px-3 py-2 bg-blue-600 text-white rounded-lg" (click)="toggleSidebar()">☰</button>
     </div>
 

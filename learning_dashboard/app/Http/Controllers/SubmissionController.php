@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Submission;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class SubmissionController extends Controller
 {
@@ -45,6 +46,58 @@ class SubmissionController extends Controller
             'data' => $submission
         ], 201);
     }
+
+
+    public function update(Request $request, Submission $submission)
+    {
+        // ensure the authenticated user owns this submission
+        if ($submission->user_id !== Auth::id()) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        $request->validate([
+            'details' => 'required|string',
+            'screenshot' => 'nullable|image|max:2048',
+        ]);
+
+        // handle optional new screenshot
+        $path = $submission->screenshot_path;
+        if ($request->hasFile('screenshot')) {
+            // delete old file if exists
+            if ($path) {
+                Storage::disk('public')->delete($path);
+            }
+            $path = $request->file('screenshot')->store('submissions', 'public');
+        }
+
+        $submission->update([
+            'details' => $request->details,
+            'screenshot_path' => $path,
+        ]);
+
+        return response()->json([
+            'message' => 'Submission updated successfully',
+            'data' => $submission
+        ], 200);
+    }
+
+    public function destroy(Submission $submission)
+    {
+        // ensure the authenticated user owns this submission
+        if ($submission->user_id !== Auth::id()) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        // delete file if exists
+        if ($submission->screenshot_path) {
+            Storage::disk('public')->delete($submission->screenshot_path);
+        }
+
+        $submission->delete();
+
+        return response()->json(['message' => 'Submission deleted successfully'], 200);
+    }
+
 
     
 }
