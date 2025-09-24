@@ -1,0 +1,97 @@
+<div class="min-h-screen bg-gray-100 flex">
+  <!-- Sidebar -->
+  <aside class="w-64 bg-white shadow-md hidden sticky md:block top-0 h-screen">
+    <div class="p-6 border-b">
+      <img src="assets/mylogo.png" alt="Logo" class="h-15 w-auto" />
+    </div>
+    <nav class="mt-6 space-y-2 px-4">
+      <a routerLink="/mentor-dashboard" class="block px-3 py-2 rounded-lg hover:bg-orange-600 hover:text-white">📊 Dashboard</a>
+      <a routerLink="/mentor/submissions" class="block px-3 py-2 rounded-lg hover:bg-orange-600 hover:text-white">📂 All Submissions</a>
+      <div class="px-6">
+        <button class="w-full mt-80 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600" (click)="logout()">
+          Logout
+        </button>
+      </div>
+    </nav>
+  </aside>
+
+  <!-- Main content -->
+  <main class="flex-1 p-6">
+    <!-- Top bar -->
+    <div class="flex items-center justify-between mb-6">
+      <h2 class="text-2xl font-semibold">Mentor Dashboard 👨‍🏫</h2>
+      <button class="md:hidden px-3 py-2 bg-blue-600 text-white rounded-lg" (click)="toggleSidebar()">☰</button>
+    </div>
+
+    <!-- Stats cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+      <div class="bg-white p-6 rounded-xl shadow hover:shadow-lg">
+        <p class="text-gray-500">Total Submissions</p>
+        <h3 class="text-3xl font-bold">{{ submissions.length }}</h3>
+      </div>
+      <div class="bg-white p-6 rounded-xl shadow hover:shadow-lg">
+        <p class="text-gray-500">Pending</p>
+        <h3 class="text-3xl font-bold">{{ pendingCount }}</h3>
+      </div>
+      <div class="bg-white p-6 rounded-xl shadow hover:shadow-lg">
+        <p class="text-gray-500">Approved</p>
+        <h3 class="text-3xl font-bold">{{ approvedCount }}</h3>
+      </div>
+    </div>
+
+    <!-- Submissions table with actions -->
+    <div class="bg-white rounded-xl shadow p-6">
+      <h3 class="text-lg font-semibold mb-4">All Learners' Submissions</h3>
+      <table class="w-full text-left border-collapse">
+        <thead>
+          <tr class="text-gray-600 border-b">
+            <th class="pb-2 border-2 p-4">#</th>
+            <th class="pb-2 border-2 p-4">Learner</th>
+            <th class="pb-2 border-2 p-4">Notes</th>
+            <th class="pb-2 border-2 p-4">Screenshot</th>
+            <th class="pb-2 border-2 p-4">Date</th>
+            <th class="pb-2 border-2 p-4">Status</th>
+            <th class="pb-2 border-2 p-4">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let submission of submissions; index as i" class="border-b">
+            <td class="py-2 border-2 p-4">{{ i + 1 }}</td>
+            <td class="py-2 border-2 p-4">{{ submission.user?.name || 'Unknown' }}</td>
+            <td class="py-2 border-2 p-4">{{ submission.details }}</td>
+            <td class="py-2 border-2 p-4">
+              <img *ngIf="submission.screenshot_path"
+                [src]="'http://localhost:8000/storage/' + submission.screenshot_path"
+                alt="Screenshot"
+                class="h-16 w-16 object-cover rounded" />
+              <span *ngIf="!submission.screenshot_path">N/A</span>
+            </td>
+            <td class="py-2 border-2 p-4">{{ submission.created_at | date:'medium' }}</td>
+            <td class="py-2 border-2 p-4">
+              <span
+                class="px-2 py-1 rounded text-xs"
+                [ngClass]="{
+                  'bg-green-100 text-green-700': submission.status === 'approved',
+                  'bg-yellow-100 text-yellow-700': submission.status === 'pending',
+                  'bg-red-100 text-red-700': submission.status === 'rejected'
+                }">
+                {{ submission.status }}
+              </span>
+            </td>
+            <td class="py-2 border-2 p-4 space-x-2">
+              <button class="px-2 py-1 bg-green-500 text-white rounded hover:bg-green-600 text-xs"
+                (click)="updateStatus(submission.id, 'approved')">Approve</button>
+              <button class="px-2 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600 text-xs"
+                (click)="updateStatus(submission.id, 'rejected')">Reject</button>
+              <button class="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600 text-xs"
+                (click)="deleteSubmission(submission.id)">Delete</button>
+            </td>
+          </tr>
+          <tr *ngIf="submissions.length === 0">
+            <td colspan="7" class="text-center py-4 text-gray-500">No submissions found.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+</div>
