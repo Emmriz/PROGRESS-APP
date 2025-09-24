@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\SubmissionController;
 use App\Http\Controllers\Auth\ApiLoginController;
+use App\Http\Controllers\AdminSubmissionController;
 use Illuminate\Http\Request;
 
 // Authentication routes
@@ -29,4 +30,12 @@ Route::middleware('auth:sanctum')->group(function () {
 
 Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
     return $request->user();
+});
+
+
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/admin/submissions', [AdminSubmissionController::class, 'index']);
+    Route::patch('/admin/submissions/{id}', [AdminSubmissionController::class, 'updateStatus']);
+    Route::delete('/admin/submissions/{id}', [AdminSubmissionController::class, 'destroy']);
 });
