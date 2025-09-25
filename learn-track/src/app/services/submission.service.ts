@@ -32,10 +32,6 @@ export class SubmissionService {
     );
   }
 
-  // updateSubmissionStatus(id: number, status: string): Observable<any> {
-  // // Use POST if Laravel doesn’t allow PUT
-  // return this.http.post(`${this.apiUrl}/${id}/status`, { status }, { headers: this.getAuthHeaders() });
-  // }
   updateSubmissionStatus(id: number, status: string): Observable<any> {
     // PATCH instead of PUT
     return this.http.patch(`${this.apiUrl}/${id}`, { status }, { headers: this.getAuthHeaders() });
