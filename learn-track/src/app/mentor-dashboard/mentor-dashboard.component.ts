@@ -1,73 +1,98 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';  // 👈 import this
-import { HttpClient, HttpClientModule, HttpHeaders } from '@angular/common/http';
-import { Router } from '@angular/router';
+import { CommonModule, NgFor, NgIf, NgClass } from '@angular/common';
+import { Router, RouterModule } from '@angular/router';
+import { HttpClientModule } from '@angular/common/http';
+import { Submission, SubmissionService } from '../services/submission.service';
 
 @Component({
   selector: 'app-mentor-dashboard',
   standalone: true,
-  imports: [CommonModule, HttpClientModule],  // 👈 include CommonModule here
+  imports: [CommonModule, RouterModule, NgFor, NgIf, NgClass, HttpClientModule],
   templateUrl: './mentor-dashboard.component.html',
-  styleUrls: ['./mentor-dashboard.component.css']
+  providers: [SubmissionService],
 })
 export class MentorDashboardComponent implements OnInit {
-  submissions: any[] = [];
-  user: any = null;
-  constructor(private http: HttpClient, private router: Router) {}
+  submissions: Submission[] = [];
+  pendingCount = 0;
+  approvedCount = 0;
+  viewMode: 'table' | 'cards' = 'table';
+  sidebarOpen = false;
+  loading = false;
+  error = '';
+
+  constructor(private router: Router, private submissionService: SubmissionService) {}
 
   ngOnInit(): void {
     this.fetchSubmissions();
   }
 
-  get pendingCount() {
-    return this.submissions.filter(s => s.status === 'pending').length;
+  toggleSidebar() {
+    this.sidebarOpen = !this.sidebarOpen;
   }
 
-  get approvedCount() {
-    return this.submissions.filter(s => s.status === 'approved').length;
+  switchView(mode: 'table' | 'cards') {
+    this.viewMode = mode;
   }
 
-  fetchSubmissions() {
-    const token = localStorage.getItem('auth_token');
-    this.http.get<any>('http://localhost:8000/api/admin/submissions', {
-      headers: new HttpHeaders({ Authorization: `Bearer ${token}` })
-    }).subscribe({
-      next: (res) => this.submissions = res,
-      error: (err) => console.error(err)
+  fetchSubmissions(): void {
+    this.loading = true;
+    this.error = '';
+    this.submissionService.getSubmissions().subscribe({
+      next: (data) => {
+        this.submissions = Array.isArray(data) ? data : [];
+        this.calculateStats();
+        this.loading = false;
+      },
+      error: () => {
+        this.error = 'Failed to load submissions.';
+        this.loading = false;
+      }
     });
   }
 
-  updateStatus(id: number, status: string) {
-    const token = localStorage.getItem('auth_token');
-    this.http.put(`http://localhost:8000/api/admin/submissions/${id}`, 
-      { status }, 
-      { headers: new HttpHeaders({ Authorization: `Bearer ${token}` }) }
-    ).subscribe({
-      next: () => this.fetchSubmissions(),
-      error: (err) => console.error(err)
+  calculateStats() {
+    this.pendingCount = this.submissions.filter(s => s.status === 'pending').length;
+    this.approvedCount = this.submissions.filter(s => s.status === 'approved').length;
+  }
+
+  updateStatus(submission: Submission, status: 'pending' | 'approved' | 'rejected') {
+    this.submissionService.updateSubmissionStatus(submission.id, status).subscribe({
+      next: () => {
+        submission.status = status;
+        this.calculateStats();
+      },
+      error: () => alert('Error updating status')
     });
   }
 
-  deleteSubmission(id: number) {
+  deleteSubmission(submission: Submission) {
     if (!confirm('Are you sure you want to delete this submission?')) return;
-
-    const token = localStorage.getItem('auth_token');
-    this.http.delete(`http://localhost:8000/api/admin/submissions/${id}`, {
-      headers: new HttpHeaders({ Authorization: `Bearer ${token}` })
-    }).subscribe({
-      next: () => this.submissions = this.submissions.filter(s => s.id !== id),
-      error: (err) => console.error(err)
+    this.submissionService.deleteSubmission(submission.id).subscribe({
+      next: () => {
+        this.submissions = this.submissions.filter(s => s.id !== submission.id);
+        this.calculateStats();
+      },
+      error: () => alert('Error deleting submission')
     });
   }
 
-  logout() {
-  localStorage.removeItem('token');
-  localStorage.removeItem('user');
-  this.router.navigate(['/login']);
+  // Track modal state
+selectedImage: string | null = null;
+
+// Open screenshot modal
+openImage(path: string) {
+  this.selectedImage = `http://localhost:8000/storage/${path}`;
+}
+
+// Close modal
+closeImage() {
+  this.selectedImage = null;
 }
 
 
-  toggleSidebar() {
-    // Add logic if you need mobile sidebar toggle
+  logout() {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    this.router.navigate(['/login']);
   }
 }
