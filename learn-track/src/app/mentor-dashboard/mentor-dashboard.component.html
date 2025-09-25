@@ -20,7 +20,7 @@
     <!-- Top bar -->
     <div class="flex items-center justify-between mb-6">
       <h2 class="text-2xl font-semibold">Mentor Dashboard 👨‍🏫</h2>
-      <button class="md:hidden px-3 py-2 bg-blue-600 text-white rounded-lg" (click)="toggleSidebar()">☰</button>
+      <button class="md:hidden px-3 py-2 bg-red-500 text-white rounded-lg" (click)="toggleSidebar()">☰</button>
     </div>
 
     <!-- Stats cards -->
@@ -99,14 +99,14 @@
   <div class="flex justify-end mb-6 space-x-2">
     <button 
       class="px-4 py-2 rounded-lg shadow text-sm font-medium"
-      [ngClass]="viewMode === 'table' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700'"
+      [ngClass]="viewMode === 'table' ? 'bg-red-500 text-white' : 'bg-gray-200 text-gray-700'"
       (click)="switchView('table')">
       📊 Table View
     </button>
 
     <button 
       class="px-4 py-2 rounded-lg shadow text-sm font-medium"
-      [ngClass]="viewMode === 'cards' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700'"
+      [ngClass]="viewMode === 'cards' ? 'bg-red-500 text-white' : 'bg-gray-200 text-gray-700'"
       (click)="switchView('cards')">
       📌 Card View
     </button>
@@ -116,25 +116,25 @@
   <div *ngIf="viewMode === 'table'" class="overflow-x-auto">
     <table class="w-full border-collapse rounded-lg shadow">
       <thead class="bg-gray-100">
-        <tr>
-          <th class="px-4 py-2 text-left">Learner</th>
-          <th class="px-4 py-2">Details</th>
-          <th class="px-4 py-2">Screenshot</th>
-          <th class="px-4 py-2">Status</th>
-          <th class="px-4 py-2">Actions</th>
+        <tr class="border-2">
+          <th class="px-4 py-2 border-2">Learner</th>
+          <th class="px-4 py-2 border-2">Details</th>
+          <th class="px-4 py-2 border-2">Screenshot</th>
+          <th class="px-4 py-2 border-2">Status</th>
+          <th class="px-4 py-2 border-2">Actions</th>
         </tr>
       </thead>
-      <tbody>
-        <tr *ngFor="let submission of submissions" class="border-b">
-          <td class="px-4 py-2">{{ submission.user?.name }}</td>
-          <td class="px-4 py-2">{{ submission.details }}</td>
-          <td class="px-4 py-2">
+      <tbody class="border-2">
+        <tr *ngFor="let submission of submissions" class="border-2">
+          <td class="px-4 py-2 border-2">{{ submission.user?.name }}</td>
+          <td class="px-4 py-2 border-2">{{ submission.details }}</td>
+          <td class="px-4 py-2 border-2">
             <img *ngIf="submission.screenshot_path" 
                  [src]="'http://localhost:8000/storage/' + submission.screenshot_path" 
                  class="h-12 w-12 object-cover rounded cursor-pointer"
                  (click)="openImage(submission.screenshot_path)" />
           </td>
-          <td class="px-4 py-2">
+          <td class="px-4 py-2 border-2">
             <span [ngClass]="{
               'text-green-600 font-medium': submission.status === 'approved',
               'text-yellow-600 font-medium': submission.status === 'pending',
@@ -193,14 +193,14 @@
 
 </main>
 <!-- Screenshot Modal -->
-<div *ngIf="selectedImage" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div *ngIf="selectedImage" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
   <div class="bg-white rounded-lg overflow-hidden shadow-lg max-w-2xl w-full">
     <img [src]="selectedImage" class="w-full object-contain"/>
     <div class="p-2 text-right">
       <button (click)="closeImage()" class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600">Close</button>
     </div>
   </div>
-</div>
+    </div>
 
 
 </div>
